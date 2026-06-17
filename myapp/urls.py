@@ -16,4 +16,9 @@ urlpatterns = [
     path("notes/share/<int:note_id>/", views.share_note, name="share_note"),
     path("notes/get/<int:note_id>/", views.get_note_data),
     path("notes/quiz/<int:note_id>/",views.generate_quiz,name="generate_quiz"),
+    path("notes/flashcards/<int:note_id>/", views.generate_flashcard_view, name="generate_flashcards" ),
+    path("notes/keyterms/<int:note_id>/", views.text_extractor_view, name="generate_text_extractor" ),
+    path("notes/formulas/<int:note_id>/",views.formula_extractor_view,name="formula_extractor"),
+    path("notes/exam/<int:note_id>/",views.exam_question_view,name="exam_questions"),
+    path("notes/exam/evaluate/<int:note_id>/",views.exam_evaluate_view,name="exam_evaluate"),
 ]

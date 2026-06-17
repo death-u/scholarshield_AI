@@ -41,6 +41,8 @@ let dropZoneNotes = document.getElementById('dropzone_area_notes');
 let fileInputNotes = document.getElementById('file_input_notes');
 let sub_functions_overlay2 = document.getElementById("sub_functions_overlay2");
 const close_btn2 = document.getElementById("close-btn2")
+const examCloseBtn = document.querySelector(".exam-close-btn");
+// const outlineDiv = feedbackDiv.querySelector(".exam-model-outline");
 // =====================================
 // NEW: FILE STATE TRACKING VARIABLES
 // =====================================

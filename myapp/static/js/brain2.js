@@ -677,3 +677,414 @@ close_btn2.addEventListener("click",()=>{
     const overlay = document.getElementById("quiz_overlay");
     overlay.classList.remove("active");
 })
+
+// flash card overy lay
+document.addEventListener("click", async (e) => {
+
+    const flashBtn = e.target.closest(".flashcard_overlay");
+    if (!flashBtn) return;
+    if (!note_id) return;
+
+    Swal.fire({
+        title: "Generating Flashcards...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+
+        const response = await fetch(
+            `/notes/flashcards/${note_id}/`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            }
+        );
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+
+        Swal.close();
+        sub_functions_overlay2.classList.remove("active");
+
+        renderFlashcards(data.cards);
+
+    } catch (err) {
+        Swal.fire({
+            icon: "error",
+            title: "Flashcards Failed",
+            text: err.message
+        });
+    }
+
+});
+function renderFlashcards(cards) {
+
+    let current = 0;
+    const overlay = document.getElementById("flashcard_overlay");
+    const container = document.getElementById("flashcard_container");
+
+    function renderCard() {
+        const card = cards[current];
+
+        container.innerHTML = `
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    ${card.front}
+                </div>
+                <div class="flashcard-back">
+                    ${card.back}
+                </div>
+            </div>
+        `;
+
+        container.querySelector(".flashcard-inner")
+            .addEventListener("click", function () {
+                this.classList.toggle("flipped");
+            });
+    }
+
+    document.getElementById("next_card").onclick = () => {
+        if (current < cards.length - 1) {
+            current++;
+            renderCard();
+        }
+    };
+
+    document.getElementById("prev_card").onclick = () => {
+        if (current > 0) {
+            current--;
+            renderCard();
+        }
+    };
+
+    document.querySelector(".flashcard-close-btn")
+        .onclick = () => overlay.classList.remove("active");
+
+    overlay.classList.add("active");
+    renderCard();
+}
+
+// text extractor overy lay
+document.addEventListener("click", async(e)=>{
+    const txt_extractor_btn = e.target.closest(".Term_overlay");
+    if(!txt_extractor_btn) return;
+    if(!note_id) return;
+
+    Swal.fire({
+        title: "Extracting Key Terms...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try{
+        const response = await fetch(
+            `/notes/keyterms/${note_id}/`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            }
+        );
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+
+        Swal.close();
+        sub_functions_overlay2.classList.remove("active");
+
+        render_text_term_cards(data.terms);
+
+    }catch (err) {
+        Swal.fire({
+            icon: "error",
+            title: "Key Term Extraction Failed",
+            text: err.message
+        });
+    }
+});
+
+function render_text_term_cards(terms){
+
+    const overlay = document.getElementById("keyterm_overlay");
+    const container = document.getElementById("keyterm_container");
+
+    container.innerHTML = terms.map(term => `
+        <div class="keyterm-item">
+            <h4>${term.term}</h4>
+            <p>${term.definition}</p>
+        </div>
+    `).join("");
+
+    overlay.classList.add("active");
+
+    document.querySelector(".keyterm-close-btn")
+        .onclick = () => overlay.classList.remove("active");
+}
+
+document.addEventListener("click", async (e)=>{
+    const formulaBtn = e.target.closest(".formula_overlay");
+    if(!formulaBtn) return;
+    if(!note_id) return;
+
+    Swal.fire({
+        title: "Extracting Formulas...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try{
+        const response = await fetch(
+            `/notes/formulas/${note_id}/`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            }
+        );
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+
+        Swal.close();
+        sub_functions_overlay2.classList.remove("active");
+
+        render_formulas(data.formulas);
+
+    }catch (err) {
+        Swal.fire({
+            icon: "error",
+            title: "Formula Extraction Failed",
+            text: err.message
+        });
+    }
+});
+
+function render_formulas(formulas){
+
+    const overlay = document.getElementById("formula_overlay");
+    const container = document.getElementById("formula_container");
+
+    if(!formulas.length){
+        container.innerHTML = `
+            <div class="formula-empty">
+                <p>No formulas detected in this note.</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = formulas.map(f => `
+            <div class="formula-item">
+                <div class="formula-expression">${f.formula}</div>
+                <div class="formula-explanation">${f.explanation}</div>
+            </div>
+        `).join("");
+    }
+
+    overlay.classList.add("active");
+
+    document.querySelector(".formula-close-btn")
+        .onclick = () => overlay.classList.remove("active");
+}
+
+document.addEventListener("click", async (e)=>{
+    const examBtn = e.target.closest(".exam_overlay");
+    if(!examBtn) return;
+    if(!note_id) return;
+
+    Swal.fire({
+        title: "Generating Exam Questions...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try{
+        const response = await fetch(
+            `/notes/exam/${note_id}/`,
+            {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            }
+        );
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+
+        Swal.close();
+        sub_functions_overlay2.classList.remove("active");
+
+        render_exam_questions(data.questions);
+
+    }catch (err) {
+        Swal.fire({
+            icon: "error",
+            title: "Exam Mode Failed",
+            text: err.message
+        });
+    }
+});
+
+function render_exam_questions(questions){
+
+    const overlay = document.getElementById("exam_overlay");
+    const container = document.getElementById("exam_container");
+
+    container.innerHTML = questions.map((q, index) => `
+        <div class="exam-item">
+            <h4>Question ${index + 1}</h4>
+            <p class="exam-question">${q.question}</p>
+
+            <textarea 
+                class="exam-answer" 
+                data-question="${q.question.replace(/"/g, "&quot;")}"
+                placeholder="Write your answer here..."
+                rows="6"></textarea>
+
+            <button class="exam-submit-btn">Submit Answer</button>
+
+            <div class="exam-feedback"></div>
+        </div>
+    `).join("");
+
+    overlay.classList.add("active");
+
+    document.querySelectorAll(".exam-submit-btn").forEach(btn => {
+        btn.addEventListener("click", async function(){
+
+            const parent = this.closest(".exam-item");
+            const textarea = parent.querySelector(".exam-answer");
+            const feedbackDiv = parent.querySelector(".exam-feedback");
+
+            const student_answer = textarea.value.trim();
+            const question = textarea.dataset.question;
+
+            if(!student_answer){
+                Swal.fire({
+                    icon: "warning",
+                    title: "Empty Answer",
+                    text: "Please write your answer first."
+                });
+                return;
+            }
+
+            this.disabled = true;
+            this.innerText = "Evaluating...";
+
+            try {
+                const response = await fetch(
+                    `/notes/exam/evaluate/${note_id}/`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": getCookie("csrftoken")
+                        },
+                        body: JSON.stringify({
+                            question,
+                            student_answer
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Evaluation failed.");
+                }
+
+               const strengths = data.strengths || [];
+                const weaknesses = data.weaknesses || [];
+                const suggestions = data.suggestions || [];
+                const modelOutline = data.model_outline || [];
+                const modelAnswer = data.model_answer || "";
+
+                feedbackDiv.innerHTML = `
+                    <div class="exam-score">Score: ${data.score}/10</div>
+
+                    <div class="exam-strengths">
+                        <strong>Strengths:</strong>
+                        <ul>${strengths.map(s => `<li>${s}</li>`).join("")}</ul>
+                    </div>
+
+                    <div class="exam-weaknesses">
+                        <strong>Weaknesses:</strong>
+                        <ul>${weaknesses.map(w => `<li>${w}</li>`).join("")}</ul>
+                    </div>
+
+                    <div class="exam-suggestions">
+                        <strong>Suggestions:</strong>
+                        <ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul>
+                    </div>
+
+                    <button class="exam-view-outline-btn">
+                        View Ideal Structure
+                    </button>
+
+                    <div class="exam-model-outline" style="display:none;">
+                        <strong>Ideal Answer Structure:</strong>
+                        <ul>${modelOutline.map(p => `<li>${p}</li>`).join("")}</ul>
+                    </div>
+
+                    <button class="exam-view-answer-btn">
+                        View Model Answer
+                    </button>
+
+                    <div class="exam-model-answer" style="display:none;">
+                        <strong>Model Answer:</strong>
+                        <p>${modelAnswer}</p>
+                    </div>
+                `;
+
+                // ✅ Toggle outline
+                const viewBtn = feedbackDiv.querySelector(".exam-view-outline-btn");
+                const outlineDiv = feedbackDiv.querySelector(".exam-model-outline");
+
+                viewBtn.addEventListener("click", () => {
+                    if (outlineDiv.style.display === "none") {
+                        outlineDiv.style.display = "block";
+                        viewBtn.innerText = "Hide Ideal Structure";
+                    } else {
+                        outlineDiv.style.display = "none";
+                        viewBtn.innerText = "View Ideal Structure";
+                    }
+                });
+
+                // ✅ Toggle model answer
+                const answerBtn = feedbackDiv.querySelector(".exam-view-answer-btn");
+                const answerDiv = feedbackDiv.querySelector(".exam-model-answer");
+
+                answerBtn.addEventListener("click", () => {
+                    if (answerDiv.style.display === "none") {
+                        answerDiv.style.display = "block";
+                        answerBtn.innerText = "Hide Model Answer";
+                    } else {
+                        answerDiv.style.display = "none";
+                        answerBtn.innerText = "View Model Answer";
+                    }
+                });
+
+            } catch (err) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Evaluation Failed",
+                    text: err.message
+                });
+            } finally {
+                this.disabled = false;
+                this.innerText = "Submit Answer";
+            }
+        });
+    });
+}
+
+
+if (examCloseBtn) {
+    examCloseBtn.addEventListener("click", () => {
+        document.getElementById("exam_overlay").classList.remove("active");
+    });
+}

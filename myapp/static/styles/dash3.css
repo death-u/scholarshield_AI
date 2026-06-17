@@ -573,6 +573,8 @@
     border: 1px solid rgba(168, 85, 247, 0.3);
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    overflow-y: scroll;
+    max-width: 500px;
 }
 #sub_functions_overlay2 {
     backdrop-filter: blur(12px);
@@ -594,6 +596,8 @@
         0 15px 50px rgba(0,0,0,0.7),
         0 0 30px rgba(168, 85, 247, 0.1);
     animation: SB_fadeIn 0.3s ease forwards;
+    max-height: 400px;
+    overflow-y: scroll;
 }
 
 /* Header */
@@ -841,4 +845,504 @@
     background: rgba(255,255,255,0.06);
     color: #9ca3af;
     border: 1px solid rgba(255,255,255,0.1);
+}
+/* ==============================
+   FLASHCARD STUDY MODE
+============================== */
+
+.flashcard-card {
+    width: 92%;
+    max-width: 520px;
+    padding: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 30, 36, 0.96),
+        rgba(22, 22, 28, 0.96)
+    );
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 18px;
+    box-shadow:
+        0 15px 50px rgba(0,0,0,0.8),
+        0 0 40px rgba(168, 85, 247, 0.1);
+    backdrop-filter: blur(14px);
+}
+
+/* Card container */
+.flashcard-inner {
+    perspective: 1200px;
+    position: relative;
+    height: 230px;
+    cursor: pointer;
+}
+
+/* Front & Back */
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    padding: 26px;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: transform 0.7s cubic-bezier(.4,.2,.2,1);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Front style */
+.flashcard-front {
+    background: linear-gradient(
+        145deg,
+        rgba(168, 85, 247, 0.15),
+        rgba(124, 58, 237, 0.08)
+    );
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Back style */
+.flashcard-back {
+    background: linear-gradient(
+        145deg,
+        rgba(34, 197, 94, 0.15),
+        rgba(16, 185, 129, 0.08)
+    );
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    color: #e5e7eb;
+    transform: rotateY(180deg);
+}
+
+/* Flip effect */
+.flashcard-inner.flipped .flashcard-front {
+    transform: rotateY(180deg);
+}
+
+.flashcard-inner.flipped .flashcard-back {
+    transform: rotateY(360deg);
+}
+
+/* Subtle hover glow */
+.flashcard-inner:hover .flashcard-front {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
+}
+
+/* Controls */
+.flashcard-controls {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.flashcard-controls button {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.flashcard-controls button:hover {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Header */
+.flashcard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.flashcard-header h3 {
+    color: #e5e7eb;
+    font-size: 1.1rem;
+}
+
+.flashcard-close-btn {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.flashcard-close-btn:hover {
+    color: #f87171;
+}
+
+/* =========================
+   KEY TERM STUDY MODE
+========================= */
+
+.keyterm-card {
+    width: 92%;
+    max-width: 520px;
+    padding: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 30, 36, 0.96),
+        rgba(22, 22, 28, 0.96)
+    );
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 18px;
+    box-shadow:
+        0 15px 50px rgba(0,0,0,0.8),
+        0 0 40px rgba(168, 85, 247, 0.1);
+    backdrop-filter: blur(14px);
+}
+
+.keyterm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.keyterm-header h3 {
+    color: #e5e7eb;
+}
+
+.keyterm-close-btn {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#keyterm_container {
+    max-height: 420px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.keyterm-item {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    transition: all 0.2s ease;
+}
+
+.keyterm-item:hover {
+    background: rgba(168, 85, 247, 0.1);
+    transform: translateY(-2px);
+}
+
+.keyterm-item h4 {
+    margin-bottom: 8px;
+    color: #a855f7;
+    font-weight: 600;
+}
+
+.keyterm-item p {
+    color: #e5e7eb;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* =========================
+   FORMULA STUDY MODE
+========================= */
+
+.formula-card {
+    width: 92%;
+    max-width: 520px;
+    padding: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 30, 36, 0.96),
+        rgba(22, 22, 28, 0.96)
+    );
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 18px;
+    box-shadow:
+        0 15px 50px rgba(0,0,0,0.8),
+        0 0 40px rgba(168, 85, 247, 0.1);
+}
+
+.formula-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.formula-header h3{
+    color:#e5e7eb;
+}
+
+#formula_container {
+    max-height: 420px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.formula-item {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.formula-expression {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #a855f7;
+    margin-bottom: 8px;
+}
+
+.formula-explanation {
+    font-size: 0.9rem;
+    color: #e5e7eb;
+}
+.formula-close-btn{
+        background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.formula-close-btn:active{
+    color:#f87171;
+
+}
+.formula-item:hover:not(:disabled) {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.4);
+    transform: translateX(4px);
+}
+
+
+/* =========================
+   EXAM PRACTICE MODE (ACTIVE)
+========================= */
+
+#exam_overlay {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.exam-card {
+    width: 92%;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 30, 36, 0.96),
+        rgba(22, 22, 28, 0.96)
+    );
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 18px;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.85),
+        0 0 40px rgba(168, 85, 247, 0.1);
+}
+
+/* Header */
+.exam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.exam-header h3 {
+    color: #e5e7eb;
+    font-size: 1.1rem;
+}
+
+.exam-close-btn {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.exam-close-btn:hover {
+    color: #f87171;
+}
+
+/* Scrollable content */
+#exam_container {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 8px;
+    scroll-behavior: smooth;
+}
+
+/* Question block */
+.exam-item {
+    margin-bottom: 26px;
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    transition: all 0.2s ease;
+}
+
+.exam-item:hover {
+    background: rgba(168, 85, 247, 0.08);
+}
+
+.exam-question {
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+/* Textarea */
+.exam-answer {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(15,15,20,0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #e5e7eb;
+    resize: vertical;
+    margin-bottom: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.exam-answer:focus {
+    border-color: rgba(168, 85, 247, 0.5);
+}
+
+/* Submit button */
+.exam-submit-btn {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exam-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.3);
+}
+
+/* Feedback section */
+.exam-feedback {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Score */
+.exam-score {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #a855f7;
+    margin-bottom: 12px;
+}
+
+/* Strengths */
+.exam-strengths ul,
+.exam-weaknesses ul,
+.exam-suggestions ul {
+    margin-left: 18px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.exam-strengths strong {
+    color: #22c55e;
+}
+
+.exam-weaknesses strong {
+    color: #ef4444;
+}
+
+.exam-suggestions strong {
+    color: #facc15;
+}
+.exam-card {
+    animation: fadeInExam 0.3s ease forwards;
+}
+
+@keyframes fadeInExam {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.exam-view-outline-btn {
+    margin-top: 14px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    background: rgba(168, 85, 247, 0.1);
+    color: #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exam-view-outline-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+    transform: translateY(-2px);
+}
+
+.exam-model-outline {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+.exam-view-answer-btn {
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    background: rgba(34, 197, 94, 0.1);
+    color: #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exam-view-answer-btn:hover {
+    background: rgba(34, 197, 94, 0.2);
+}
+
+.exam-model-answer {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    line-height: 1.6;
 }

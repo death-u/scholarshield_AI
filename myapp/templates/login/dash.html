@@ -300,6 +300,34 @@
                                 <small>Create practice questions</small>
                             </div>
                         </button>
+                        <button class="SB_btn flashcard_overlay">
+                            <span>🃏</span>
+                            <div>
+                                <strong>Generate Flashcards</strong>
+                                <small>Active recall study mode</small>
+                            </div>
+                        </button>
+                        <button class="SB_btn Term_overlay">
+                            <span>🕸</span>
+                            <div>
+                                <strong>Term extractor</strong>
+                                <small>This is a revision acceleration tool</small>
+                            </div>
+                        </button>
+                        <button class="SB_btn formula_overlay">
+                            <span>📐</span>
+                            <div>
+                                <strong>Formula Extractor</strong>
+                                <small>Extract formulas from the note</small>
+                            </div>
+                        </button>
+                        <button class="SB_btn exam_overlay">
+                            <span>📖</span>
+                            <div>
+                                <strong>Exam Practice Mode</strong>
+                                <small>Generate long-answer questions</small>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -313,6 +341,55 @@
                     <div id="quiz_container"></div>
                 </div>
             </div>
+            <!-- Flashcard Overlay -->
+                <div class="upload_overlay" id="flashcard_overlay">
+                    <div class="flashcard-card">
+                        <div class="flashcard-header">
+                            <h3>🃏 Flashcards</h3>
+                            <button class="flashcard-close-btn">&times;</button>
+                        </div>
+
+                        <div id="flashcard_container"></div>
+
+                        <div class="flashcard-controls">
+                            <button id="prev_card">Previous</button>
+                            <button id="next_card">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Term Overlay -->
+                <div class="upload_overlay" id="keyterm_overlay">
+                    <div class="keyterm-card">
+                        <div class="keyterm-header">
+                            <h3>🔑 Key Terms</h3>
+                            <button class="keyterm-close-btn">&times;</button>
+                        </div>
+                        <div id="keyterm_container"></div>
+                    </div>
+                </div>
+
+                <!-- Formula Overlay -->
+                <div class="upload_overlay" id="formula_overlay">
+                    <div class="formula-card">
+                        <div class="formula-header">
+                            <h3>📐 Extracted Formulas</h3>
+                            <button class="formula-close-btn">&times;</button>
+                        </div>
+                        <div id="formula_container"></div>
+                    </div>
+                </div>
+
+                <!-- Exam Practice Overlay -->
+                <div class="upload_overlay" id="exam_overlay">
+                    <div class="exam-card">
+                        <div class="exam-header">
+                            <h3>📖 Exam Practice Mode</h3>
+                            <button class="exam-close-btn">&times;</button>
+                        </div>
+                        <div id="exam_container"></div>
+                    </div>
+                </div>
             
         </div>
         <!-- end note uploader -->

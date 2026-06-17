@@ -22,6 +22,11 @@ from .summarize_file import ask_sum_file_ai
 from .task_planner import calculate_ai_priority
 from .note_processor import process_note_with_ai
 from .quiz_generator import generate_quiz_from_ai
+from .flashcard_generator import generate_flashcards
+from .text_term_generator import generate_keyterms
+from .formula_generator import generate_formulas
+from .exam_generator import generate_exam_questions
+from .exam_evaluator import evaluate_exam_answer
 # ==========================================
 # AUTHENTICATION & LANDING VIEWS
 # ==========================================
@@ -555,3 +560,138 @@ def generate_quiz(request, note_id):
     quiz_data = generate_quiz_from_ai(raw_text)
 
     return JsonResponse({"quiz": quiz_data})
+
+
+
+
+
+
+@login_required
+def generate_flashcard_view(request, note_id):
+
+    note = get_object_or_404(
+        AcademicNote,
+        id=note_id,
+        user=request.user
+    )
+
+    raw_text = note.raw_extracted_text or ""
+
+    if not raw_text.strip():
+        return JsonResponse(
+            {"error": "Note has no content."},
+            status=400
+        )
+
+    flashcards = generate_flashcards(raw_text)
+
+    return JsonResponse({"cards": flashcards})
+
+
+@login_required
+def text_extractor_view(request, note_id):
+
+    note = get_object_or_404(
+        AcademicNote,
+        id=note_id,
+        user=request.user  # ✅ lowercase
+    )
+
+    raw_text = note.raw_extracted_text or ""
+
+    if not raw_text.strip():
+        return JsonResponse(
+            {"error": "Note has no content."},
+            status=400
+        )
+    
+    text_extractor = generate_keyterms(raw_text)
+
+    if not text_extractor:
+        return JsonResponse(
+            {"error": "Failed to extract key terms."},
+            status=500
+        )
+
+    return JsonResponse({"terms": text_extractor})
+
+
+
+
+
+@login_required
+def formula_extractor_view(request, note_id):
+
+    note = get_object_or_404(
+        AcademicNote,
+        id=note_id,
+        user=request.user
+    )
+
+    raw_text = note.raw_extracted_text or ""
+
+    if not raw_text.strip():
+        return JsonResponse(
+            {"error": "Note has no content."},
+            status=400
+        )
+
+    formulas = generate_formulas(raw_text)
+
+    return JsonResponse({"formulas": formulas})
+
+
+
+
+@login_required
+def exam_question_view(request, note_id):
+
+    note = get_object_or_404(
+        AcademicNote,
+        id=note_id,
+        user=request.user
+    )
+
+    raw_text = note.raw_extracted_text or ""
+
+    if not raw_text.strip():
+        return JsonResponse(
+            {"error": "Note has no content."},
+            status=400
+        )
+
+    questions = generate_exam_questions(raw_text)
+
+    return JsonResponse({"questions": questions})
+
+
+
+
+
+@login_required
+def exam_evaluate_view(request, note_id):
+
+    note = get_object_or_404(
+        AcademicNote,
+        id=note_id,
+        user=request.user
+    )
+
+    data = json.loads(request.body)
+
+    question = data.get("question")
+    student_answer = data.get("student_answer")
+
+    if not student_answer.strip():
+        return JsonResponse(
+            {"error": "Answer cannot be empty."},
+            status=400
+        )
+
+    result = evaluate_exam_answer(
+        note.raw_extracted_text,
+        question,
+        student_answer
+    )
+
+    return JsonResponse(result)
