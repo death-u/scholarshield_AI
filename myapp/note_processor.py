@@ -30,7 +30,7 @@ def process_note_with_ai(extracted_text: str) -> dict:
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
             temperature=0.2, # Lower temperature for better JSON accuracy
             response_format={"type": "json_object"} # Force JSON mode

@@ -43,7 +43,7 @@ def ask_sum_file_ai(user_name: str, file_prompt: str, summary_format: str, custo
     
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-20b",
             messages=messages,
             temperature=0.3, 
             max_tokens=1024, 

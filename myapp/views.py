@@ -106,10 +106,12 @@ def Dash_board(request):
     existing_notes = AcademicNote.objects.filter(user=request.user).order_by('-id')
     critical_hotzone = all_active_tasks.filter(ai_score__gte=8.5)
     standard_feed = all_active_tasks.filter(ai_score__lt=8.5)
+    user_info = request.user
     context = {
         "critical_hotzone": critical_hotzone,
         "standard_feed": standard_feed,
         'notes': existing_notes,
+        'user_info': user_info
     }
     return render(request, "login/dash.html",context)
 
@@ -451,7 +453,7 @@ def delete_note_view(request, note_id):
 
 
 
-@login_required
+@login_required(login_url="login")
 def download_note(request, note_id):
     note = get_object_or_404(AcademicNote, id=note_id, user=request.user)
 
@@ -473,7 +475,7 @@ def download_note(request, note_id):
     return response
 
 
-
+@login_required(login_url="login")
 def _send_note_to_self_email(note_id, user):
     note = AcademicNote.objects.get(id=note_id, user=user)
 
@@ -511,7 +513,7 @@ def _send_note_to_self_email(note_id, user):
     msg.send(fail_silently=False)
 
 
-@login_required
+@login_required(login_url="login")
 def share_note(request, note_id):
     note = get_object_or_404(AcademicNote, id=note_id, user=request.user)
 
@@ -528,7 +530,7 @@ def share_note(request, note_id):
     return JsonResponse({"status": "sent", "to": request.user.email, "note_id": note.id})
 
 
-@login_required
+@login_required(login_url="login")
 def get_note_data(request, note_id):
     note = get_object_or_404(AcademicNote, id=note_id, user=request.user)
 
@@ -538,11 +540,12 @@ def get_note_data(request, note_id):
         "has_file": bool(note.uploaded_file),
         "file_url": note.uploaded_file.url if note.uploaded_file else None,
         "raw_text": note.raw_extracted_text or "",
+        "topic": note.topic or "None"
     })
 
 
 
-@login_required
+@login_required(login_url="login")
 def generate_quiz(request, note_id):
     note = get_object_or_404(
         AcademicNote, 
@@ -566,7 +569,7 @@ def generate_quiz(request, note_id):
 
 
 
-@login_required
+@login_required(login_url="login")
 def generate_flashcard_view(request, note_id):
 
     note = get_object_or_404(
@@ -588,13 +591,13 @@ def generate_flashcard_view(request, note_id):
     return JsonResponse({"cards": flashcards})
 
 
-@login_required
+@login_required(login_url="login")
 def text_extractor_view(request, note_id):
 
     note = get_object_or_404(
         AcademicNote,
         id=note_id,
-        user=request.user  # ✅ lowercase
+        user=request.user  
     )
 
     raw_text = note.raw_extracted_text or ""
@@ -619,7 +622,7 @@ def text_extractor_view(request, note_id):
 
 
 
-@login_required
+@login_required(login_url="login")
 def formula_extractor_view(request, note_id):
 
     note = get_object_or_404(
@@ -643,7 +646,7 @@ def formula_extractor_view(request, note_id):
 
 
 
-@login_required
+@login_required(login_url="login")
 def exam_question_view(request, note_id):
 
     note = get_object_or_404(
@@ -668,7 +671,7 @@ def exam_question_view(request, note_id):
 
 
 
-@login_required
+@login_required(login_url="login")
 def exam_evaluate_view(request, note_id):
 
     note = get_object_or_404(
@@ -695,3 +698,31 @@ def exam_evaluate_view(request, note_id):
     )
 
     return JsonResponse(result)
+
+
+
+@login_required(login_url="login")
+def update_note_view(request, note_id):
+    note = get_object_or_404(
+        AcademicNote,
+        id=note_id,
+        user=request.user
+    )
+
+    data = json.loads(request.body)
+    new_text = data.get("raw_text", "").strip()
+
+    if not new_text:
+        return JsonResponse(
+            {"error": "Note content cannot be empty."},
+            status=400
+        )
+
+    note.raw_extracted_text = new_text
+    note.save()
+
+    return JsonResponse({"status": "updated"})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')

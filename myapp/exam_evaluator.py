@@ -29,10 +29,11 @@ Your task:
 Rules:
 - "model_answer" must be clear, accurate, and based strictly on the study notes but also you should be flexable to the student answer as far it also generally correct not only strictly following the note.
 - Do NOT write more than 150 words for the model answer.
-- Grade strictly based on the study notes.
+- Grade strictly based on the study notes but also be flexible with the student answer.
 - Return ONLY valid JSON.
 - No markdown.
 - No commentary.
+- also note be flexable.
 
 Format:
 
@@ -57,7 +58,7 @@ Student Answer:
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=1200,

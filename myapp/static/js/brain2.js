@@ -1,19 +1,35 @@
-// document.querySelectorAll(".note_main[data-md]").forEach(renderMarkdownInElement);
+function gsapTextLoading(className) {
+    const element = document.querySelector(className);
+    if (!element) return null;
 
-// ORIGINAL TEXT PIPELINE 
+    let dots = 0;
+
+    return gsap.to({}, {
+        duration: 0.5,
+        repeat: -1,
+        onRepeat: () => {
+            dots = (dots + 1) % 4;
+            element.textContent = "Loading" + ".".repeat(dots);
+        }
+    });
+}
+
 async function send_sum_mess(message, summary_format, custom_instructions) {
+    // document.querySelector(".item12-output").innerHTML=""
     message = message.trim();
 
     if (!message) {
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Chat field can't be empty"
+            text: "Chat field can't be empty",
+            theme: 'dark'
         });
         return;
     }
 
     try {
+        let anim = gsapTextLoading(".item12-output")
         console.log("sending message");
         summary_btn.disabled = true;
 
@@ -44,16 +60,24 @@ async function send_sum_mess(message, summary_format, custom_instructions) {
         const data = await response.json();
         console.log("Success:", data);
 
+        // anim.kill();
+        if (anim) {
+            anim.kill();
+        }
+
+
         if (item12_output) {
             item12_output.innerHTML = marked.parse(data.reply || data.summary || "No response received.");
         }
+        
 
     } catch (error) {
         console.error("Fetch error:", error);
         Swal.fire({
             icon: "error",
             title: "Processing Failed",
-            text: "Could not generate summary. Check server logs."
+            text: "Could not generate summary. Check server logs.",
+            theme: 'dark'
         });
     } finally {
         console.log("request process finished");
@@ -66,8 +90,9 @@ async function send_sum_file(file, summary_format, custom_instructions) {
     try {
         console.log("sending file");
         summary_btn.disabled = true;
-        let item12_output = document.querySelector(".item12-output");
-        item12_output.innerHTML = "";
+        // let item12_output = document.querySelector(".item12-output");
+        // item12_output.innerHTML = "";
+        document.querySelector(".item12-output").innerHTML = "Loading..."
 
         const formData = new FormData();
         formData.append("file", file);
@@ -88,6 +113,7 @@ async function send_sum_file(file, summary_format, custom_instructions) {
         const data = await response.json();
         console.log("File Success:", data);
         
+        //  document.querySelector(".item12-output").innerHTML = "Loadi"
         if (item12_output) {
             item12_output.innerHTML = marked.parse(data.reply || data.summary || "No response received.");
         }
@@ -101,7 +127,9 @@ async function send_sum_file(file, summary_format, custom_instructions) {
         Swal.fire({ 
             icon: "error", 
             title: "Processing Failed", 
-            text: "Could not parse document. Check server logs." 
+            text: `Could not parse document: ${error}.`,
+            theme: 'dark'
+            // text: "Could not parse document. Check server logs." 
         });
     } finally {
         console.log("file request process finished");
@@ -328,6 +356,7 @@ async function deleteNoteFromBackend(noteId) {
     confirmButtonColor: "#d33",
     cancelButtonColor: "#555",
     reverseButtons: true,
+    theme: 'dark'
   });
 
   if (!result.isConfirmed) return;
@@ -347,6 +376,7 @@ async function deleteNoteFromBackend(noteId) {
         text: "Your note has been removed.",
         timer: 1400,
         showConfirmButton: false,
+        theme: 'dark'
       });
     } else {
       const errText = await response.text(); // optional debug
@@ -354,6 +384,7 @@ async function deleteNoteFromBackend(noteId) {
         icon: "error",
         title: "Delete failed",
         text: `Server refused delete (${response.status}).`,
+        theme: 'dark'
       });
       console.error(errText);
     }
@@ -362,6 +393,7 @@ async function deleteNoteFromBackend(noteId) {
       icon: "error",
       title: "Network error",
       text: "Could not reach the server.",
+      theme: 'dark'
     });
   }
 }
@@ -470,22 +502,35 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-let note_id = ""
+let note_id = "";
 
-document.addEventListener("click",(e)=>{
-     const three_dot_btn = e.target.closest(".three_dot");
-     if(!three_dot_btn) return;
+// 1. Handle opening the overlay
+document.addEventListener("click", (e) => {
+    const three_dot_btn = e.target.closest(".three_dot");
+    if (!three_dot_btn) return;
 
-     note_id = three_dot_btn.dataset.id;
-     if (!sub_functions_overlay2) return
-
-     sub_functions_overlay2.classList.add("active");
-})
-sub_functions_overlay2.addEventListener("click",(e)=>{
-    if(!e.target.closest(".SB_content") || e.target.closest(".SB_close")){
-        sub_functions_overlay2.classList.remove("active")
+    // Save the ID globally for the other tools to use
+    note_id = three_dot_btn.dataset.id;
+    
+    // Safely query the DOM directly to avoid scoping crashes
+    const overlay = document.getElementById("sub_functions_overlay2");
+    if (overlay) {
+        overlay.classList.add("active");
     }
-})
+});
+
+// 2. Handle closing the overlay using event delegation
+document.addEventListener("click", (e) => {
+    const overlay = document.getElementById("sub_functions_overlay2");
+    
+    // Check if the overlay exists and the click happened inside the overlay container
+    if (overlay && e.target.closest("#sub_functions_overlay2")) {
+        // Close it if clicking outside the main content box OR on the close button
+        if (!e.target.closest(".SB_content") || e.target.closest(".SB_close")) {
+            overlay.classList.remove("active");
+        }
+    }
+});
 // main summarize function
 document.addEventListener("click", async (e) => {
 
@@ -509,13 +554,15 @@ document.addEventListener("click", async (e) => {
         activeFileState = null;
         resetFileState();   
 
-        sub_functions_overlay2.classList.remove("active");
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
 
     } catch (error) {
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Could not load note for summarization."
+            text: "Could not load note for summarization.",
+            theme: 'dark'
         });
     }
 
@@ -533,6 +580,7 @@ document.addEventListener("click", async (e) => {
         title: "Generating Quiz...",
         text: "AI is creating your questions",
         allowOutsideClick: false,
+        theme: 'dark',
         didOpen: () => Swal.showLoading()
     });
 
@@ -551,7 +599,8 @@ document.addEventListener("click", async (e) => {
         if (!response.ok) throw new Error(data.error);
 
         Swal.close();
-        sub_functions_overlay2.classList.remove("active");
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
 
         // Render quiz
         renderQuiz(data.quiz);
@@ -560,7 +609,8 @@ document.addEventListener("click", async (e) => {
         Swal.fire({
             icon: "error",
             title: "Quiz Failed",
-            text: err.message
+            text: err.message,
+            theme: 'dark'
         });
     }
 });
@@ -688,6 +738,7 @@ document.addEventListener("click", async (e) => {
     Swal.fire({
         title: "Generating Flashcards...",
         allowOutsideClick: false,
+        theme: 'dark',
         didOpen: () => Swal.showLoading()
     });
 
@@ -707,7 +758,8 @@ document.addEventListener("click", async (e) => {
         if (!response.ok) throw new Error(data.error);
 
         Swal.close();
-        sub_functions_overlay2.classList.remove("active");
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
 
         renderFlashcards(data.cards);
 
@@ -715,7 +767,8 @@ document.addEventListener("click", async (e) => {
         Swal.fire({
             icon: "error",
             title: "Flashcards Failed",
-            text: err.message
+            text: err.message,
+            theme: 'dark'
         });
     }
 
@@ -776,6 +829,7 @@ document.addEventListener("click", async(e)=>{
     Swal.fire({
         title: "Extracting Key Terms...",
         allowOutsideClick: false,
+        theme: 'dark',
         didOpen: () => Swal.showLoading()
     });
 
@@ -794,7 +848,8 @@ document.addEventListener("click", async(e)=>{
         if (!response.ok) throw new Error(data.error);
 
         Swal.close();
-        sub_functions_overlay2.classList.remove("active");
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
 
         render_text_term_cards(data.terms);
 
@@ -802,7 +857,8 @@ document.addEventListener("click", async(e)=>{
         Swal.fire({
             icon: "error",
             title: "Key Term Extraction Failed",
-            text: err.message
+            text: err.message,
+            theme: 'dark'
         });
     }
 });
@@ -833,6 +889,7 @@ document.addEventListener("click", async (e)=>{
     Swal.fire({
         title: "Extracting Formulas...",
         allowOutsideClick: false,
+        theme: 'dark',
         didOpen: () => Swal.showLoading()
     });
 
@@ -851,7 +908,8 @@ document.addEventListener("click", async (e)=>{
         if (!response.ok) throw new Error(data.error);
 
         Swal.close();
-        sub_functions_overlay2.classList.remove("active");
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
 
         render_formulas(data.formulas);
 
@@ -859,7 +917,8 @@ document.addEventListener("click", async (e)=>{
         Swal.fire({
             icon: "error",
             title: "Formula Extraction Failed",
-            text: err.message
+            text: err.message,
+            theme: 'dark'
         });
     }
 });
@@ -898,6 +957,7 @@ document.addEventListener("click", async (e)=>{
     Swal.fire({
         title: "Generating Exam Questions...",
         allowOutsideClick: false,
+        theme: 'dark',
         didOpen: () => Swal.showLoading()
     });
 
@@ -916,7 +976,8 @@ document.addEventListener("click", async (e)=>{
         if (!response.ok) throw new Error(data.error);
 
         Swal.close();
-        sub_functions_overlay2.classList.remove("active");
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
 
         render_exam_questions(data.questions);
 
@@ -924,7 +985,8 @@ document.addEventListener("click", async (e)=>{
         Swal.fire({
             icon: "error",
             title: "Exam Mode Failed",
-            text: err.message
+            text: err.message,
+            theme: 'dark'
         });
     }
 });
@@ -967,7 +1029,8 @@ function render_exam_questions(questions){
                 Swal.fire({
                     icon: "warning",
                     title: "Empty Answer",
-                    text: "Please write your answer first."
+                    text: "Please write your answer first.",
+                    theme: 'dark'
                 });
                 return;
             }
@@ -1040,7 +1103,7 @@ function render_exam_questions(questions){
                     </div>
                 `;
 
-                // ✅ Toggle outline
+                //  Toggle outline
                 const viewBtn = feedbackDiv.querySelector(".exam-view-outline-btn");
                 const outlineDiv = feedbackDiv.querySelector(".exam-model-outline");
 
@@ -1054,7 +1117,7 @@ function render_exam_questions(questions){
                     }
                 });
 
-                // ✅ Toggle model answer
+                //  Toggle model answer
                 const answerBtn = feedbackDiv.querySelector(".exam-view-answer-btn");
                 const answerDiv = feedbackDiv.querySelector(".exam-model-answer");
 
@@ -1072,7 +1135,8 @@ function render_exam_questions(questions){
                 Swal.fire({
                     icon: "error",
                     title: "Evaluation Failed",
-                    text: err.message
+                    text: err.message,
+                    theme: 'dark'
                 });
             } finally {
                 this.disabled = false;
@@ -1087,4 +1151,95 @@ if (examCloseBtn) {
     examCloseBtn.addEventListener("click", () => {
         document.getElementById("exam_overlay").classList.remove("active");
     });
+}
+
+
+
+
+
+//  note studio logic
+document.addEventListener("click", async (e)=>{
+    const studioBtn = e.target.closest(".note_stu_overlay");
+    if(!studioBtn) return;
+    if(!note_id) return;
+
+    try{
+        const response = await fetch(`/notes/get/${note_id}/`);
+        const data = await response.json();
+
+        if (!response.ok) throw new Error("Failed to load note.");
+
+        openNoteStudio(data, note_id);
+
+        // sub_functions_overlay2.classList.remove("active");
+        document.getElementById("sub_functions_overlay2").classList.remove("active");
+
+    } catch (err){
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Could not open note studio.",
+            theme: 'dark'
+        });
+    }
+});
+
+function openNoteStudio(data, id){
+
+    const overlay = document.getElementById("note_editor_overlay");
+
+    document.getElementById("editor_note_title").innerText = data.topic;
+
+    document.getElementById("editor_summary_view").innerHTML =
+        marked.parse(data.raw_text || "");
+
+    document.getElementById("editor_raw_view").value =
+        data.raw_text || "";
+
+    overlay.classList.add("active");
+
+    // Tab switching
+    document.querySelectorAll(".tab-btn").forEach(btn=>{
+        btn.addEventListener("click", function(){
+
+            document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+            this.classList.add("active");
+
+            if(this.dataset.tab === "summary"){
+                document.getElementById("editor_summary_view").style.display = "block";
+                document.getElementById("editor_raw_view").style.display = "none";
+                // document.querySelector("save_note_changes_class").style.cssText+=`display:block;` 
+                // alert("summary")
+            } else {
+                document.getElementById("editor_summary_view").style.display = "none";
+                document.getElementById("editor_raw_view").style.display = "block";
+                // document.querySelector("save_note_changes_class").style.cssText+=`display:block;` 
+                // alert("change")
+            }
+        });
+    });
+
+    document.querySelector(".note-editor-close-btn")
+        .onclick = ()=> overlay.classList.remove("active");
+
+    document.getElementById("save_note_changes")
+        .onclick = async ()=>{
+            const updatedText = document.getElementById("editor_raw_view").value;
+
+            await fetch(`/notes/update/${id}/`, {
+                method: "POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ raw_text: updatedText })
+            });
+
+            Swal.fire({
+                icon: "success",
+                title: "Saved",
+                text: "Note updated successfully.",
+                theme: 'dark'
+            });
+        };
 }

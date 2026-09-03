@@ -67,7 +67,7 @@ def calculate_ai_priority(title: str, excerpt: str, deadline_date: str, user_nam
     try:
         # Run Groq Llama completion sequence with strict JSON mapping constraints
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
             temperature=0.2, # Kept low to ensure consistent and logical mathematical sorting
             max_completion_tokens=60, # Tiny token blueprint since we only want a short JSON response

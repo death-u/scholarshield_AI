@@ -3,6 +3,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.Dash_board, name='dash'),
     path('chat/', views.chat_view, name='chat'),
     path('upload_text/', views.uploads_text, name='uploads_text'),
@@ -21,4 +22,5 @@ urlpatterns = [
     path("notes/formulas/<int:note_id>/",views.formula_extractor_view,name="formula_extractor"),
     path("notes/exam/<int:note_id>/",views.exam_question_view,name="exam_questions"),
     path("notes/exam/evaluate/<int:note_id>/",views.exam_evaluate_view,name="exam_evaluate"),
+    path("notes/update/<int:note_id>/",views.update_note_view,name="update_note"),
 ]
